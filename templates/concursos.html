@@ -1,0 +1,49 @@
+{% extends 'index.html' %}
+{% block contenido %}
+
+
+<br>
+
+   {% for u in concursos %}
+  <div class="" style="display:flex;justify-content:center;">Concurso de {{u.Asignatura}}, tema {{u.Tema}} ,abrirá el {{u.fechaIni}} &nbsp <button  class="btn btn-success" value={{u.Codigonombre}} name={{u.participantes}} id={{u.preciodeInsc}} onclick="inscripcion(this)" data-toggle="modal" data-target="#myModalyyy">Inscribete</button></div> <br>
+
+
+ {% endfor %}
+<script>
+    function inscripcion(b){
+    $(".modal-title").empty()
+    $('.modal-title').append('<p class="text-primary">inscripción</p>')
+    var g=b.id
+    var gg=b.name
+    var ggg=b.value
+    $("#inscribir").remove()
+    $("#modalHistorial").empty()
+    $("#modalHistorial").append('<h8> * Se admitiran '+gg+' Participantes</h8><br>');
+    $("#modalHistorial").append('<h8> * Precio de la inscripción '+g+' Pesos</h8><br>');
+    $("#modalHistorial").append('<h8> * El premio constará de el 70% de total de inscripciones </h8><br>');
+    $("#modalHistorial").append('<h8> * El código del concurso es '+ggg+' </h8><br>')
+    $(".modal-footer").append('<button id="inscribir" value='+ggg+' type="button" onclick="registrar(this)" class="btn btn-success" >Inscribirse</button>')}
+</script>
+<script>
+    function registrar(codigoC){
+          $.ajax({
+        url: '{% url "registrodeConcur" %}',
+        data: {
+            'codigoC':codigoC.value,
+
+
+        },
+        dataType: 'json',
+        success: function (data) {
+               alertify.success(data.t)
+
+
+	}
+
+}
+          )
+    }
+</script>
+
+
+{% endblock %}
