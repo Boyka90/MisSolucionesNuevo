@@ -17,20 +17,25 @@
 <div class="row" style="width: 100%;height: 100%" >
 
   <div class="col-md-8"  >
-        <embed src="{{solucion.problemaSolucion.url}}" width="100%" height="600px" ></embed>
+        <canvas class="col-lg-10 col-md-10 col-sm-12 col-xs-12" id="my_canvas"></canvas>
   </div>
 
 <div class="col-md-4">
 
-  <img src="{{solucion.problemaProblema.url}}" >
+  <img class="col-lg-10 col-md-10 col-sm-12 col-xs-12" src="{{solucion.problemaProblema.url}}" >
     <br>
     <br>
     <hr size="8px" color="black" />
 
-  <div class="row">
+  <div style="margin-left: 5px" class="row">
 
-      <audio id="medio" controls>Escuchar
-        <source src="{{solucion.problemaVideo.url}}">
+      <audio class="col-lg-10 col-md-10 col-sm-12 col-xs-12" id="medio" controls>Escuchar
+      {%if solucion.problemaVideo %}
+              <source src="{{solucion.problemaVideo.url}}">
+
+       {% else %}
+        <source src="">
+       {%endif%}
 </audio>
   </div>
 </div>
@@ -43,6 +48,33 @@
     e.preventDefault();
     window.history.back();
 });</script>
+
+   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>
+    <script>
+        const loadingTask = pdfjsLib.getDocument('{{solucion.problemaSolucion.url}}'); //reinier acaba de resolver esto
+    loadingTask.promise.then(doc => {
+
+        doc.getPage(1).then(page => {
+
+            var scale = 1.5;
+            var viewport = page.getViewport({scale: scale});
+
+            // Prepare canvas using PDF page dimensions
+            var canvas = document.getElementById('my_canvas');
+            var context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context
+            var renderContext = {
+              canvasContext: context,
+              viewport: viewport
+            };
+            var renderTask = page.render(renderContext);
+
+        });
+    });
+    </script>
 {% endblock %}
 
 

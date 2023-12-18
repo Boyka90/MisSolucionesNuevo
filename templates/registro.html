@@ -30,7 +30,7 @@
         <div class="jumbotron jumbotron-bg text-center rounded-0" style="background-image: url('{% static "img/logo/3862130.jpg" %}');">
             <div class="container">
                 <h1 class="pt-5">
-                    Página de Registro
+                    Registrarse en 2 pasos
                 </h1>
                 <p class="lead">
                     Únete a nuestra Comunidad
@@ -76,17 +76,11 @@
 
                             <div class="form-group row">
                                 <div class="col-md-12">
-                                    <input id='correo' class="form-control" type="email" onblur="envioCorreo()" name="email" required="" placeholder="Email">
+                                    <input id='correo' class="form-control" type="email"   name="email" required="" placeholder="Teclee su correo">
                                 </div>
                             </div>
 
-                           <div class="form-group row">
 
-                                <div class="col-md-12">
-                                    <input id="codigo" maxlength="5" onkeyup="numeros(this.value)" class="form-control" type="text" name="codigo" required="" placeholder="Código de verificación">
-                                </div>
-
-                            </div>
  <div class="form-check-inline">
   <label class="form-check-label">
     <input id="acuerdo" onclick="acuerdos()" type="checkbox" class="form-check-input" value="false">De acuerdo con los Términos
@@ -96,7 +90,7 @@
 
                             <div class="form-group row text-center mt-4">
                                 <div class="col-md-12">
-                                    <button id="manda" type="submit" disabled class="btn btn-primary btn-block text-uppercase" >Registrar</button>
+                                    <button id="manda" type="submit" disabled class="btn btn-primary btn-block text-uppercase" >Registrar, paso 1</button>
                                 </div>
                             </div>
                         </form>
@@ -158,17 +152,18 @@ function sonNumerosSolamente(texto){
 
 
 <script>
-    function envioCorreo(){
+    function envioCorreo(e){
+ if(e.keyCode === 13){
     var correo=$('#correo').val()
 
-    alert('Se ha enviado un correo con un código. Presione Aceptar, y ubíquese en el cuadro de texto más abajo, mientras espera mensaje de correo.');
+    alert('Se enviará a su correo un código, que debe teclear en cuadro más abajo. Presione Aceptar.');
     $('#espera').css('display','');
 
 $.ajax({
         url: '{% url "enviacorreoValidar" %}',
         data: {
           'correo': correo,
-          'origen':'codigo'
+
 
         },
         dataType: 'json',
@@ -181,7 +176,7 @@ $.ajax({
 }
           )
 
-    }
+    }}
 </script>
 
 <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>

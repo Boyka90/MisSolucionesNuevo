@@ -1,9 +1,11 @@
 from django.shortcuts import render,redirect
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4, letter
 from django.contrib.auth import authenticate,login
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
 from django.contrib.auth.forms import AuthenticationForm
-from Soluciones.models import mensajes,salas,UsuarioConcurso,concursos,correoValidacion,libros, soluciones, paquetes,tematicas,UsuarioPaq,QRPago,perfil,ProblemaPaq,User, comentarios
+from Soluciones.models import correoValidacion,libros, soluciones, paquetes,tematicas,UsuarioPaq,QRPago,perfil,ProblemaPaq,User, comentarios
 from Soluciones.forms import Formulario,FormularioPaquetes,NewUserForm,Formrespuestas
 from django.db.models import Count,Sum
 from django.views.generic import ListView
@@ -17,12 +19,42 @@ from django.http import JsonResponse,HttpResponse,HttpResponseRedirect
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from MisSoluciones.settings import EMAIL_HOST_USER
-
+from enzona_api.enzona_business_payment import enzona_business_payment
 import datetime as fecha
 from django.contrib.auth.decorators import login_required
 import json,threading,time
 from django.core.exceptions import PermissionDenied
 
+from pdf2image import convert_from_path
+
+
+
+
+
+
+
+
+"""Integracion con Enzona"""
+
+def Pago_Enzona(merchant_uuid,description_payment,currency,shipping,discount,tip,lst_products,merchant_op_id,invoice_number,return_url,cancel_url,terminal_id):
+    pay = Payments(
+    merchant_uuid=merchant_uuid,
+    description_payment= description_payment,
+    currency=currency,
+    shipping=shipping,
+    discount=discount,
+    tip=tip,
+    lst_products=lst_products,
+    merchant_op_id= merchant_op_id,
+    invoice_number=invoice_number,
+    return_url= return_url,
+    cancel_url=cancel_url,
+    terminal_id=terminal_id
+)
+
+    response = ebp.create_payments(payment=pay.get_payment())
+    transaction_uuid = response.transaction_uuid()
+    link_confirm = response.link_confirm()
 def group_required(*group_names,login_url):
    """Requires user membership in at least one of the groups passed in."""
 
@@ -39,6 +71,17 @@ def group_required(*group_names,login_url):
                return True
        return False
    return user_passes_test(in_groups,login_url)
+
+
+
+def revisadoo(request):
+    libro=request.GET.get('libro', None)
+    problema=request.GET.get('problema', None)
+    obse=request.GET.get('Obs', None)
+    estado=request.GET.get('revi', None)
+    soluciones.objects.filter(problemaLibro = libros.objects.get(titulo=libro), problemaNumero=problema).update(problemaRev= estado,problemaObs=obse)
+    data={"s":"Registro guardado"}
+    return JsonResponse(data)
 
 def contactanos(request):
     paquetesUsu=UsuarioPaq.objects.filter(usuario=request.user.id,vencido=False)
@@ -136,18 +179,7 @@ class CreaLibro(CreateView):
         context=super(CreaLibro,self).get_context_data(**kwargs)
         context.update({'novalida':'none','perfiles':perfiles})
         return context
-class CreaConcursos(CreateView):
-    model = concursos
-    template_name = "concursos_form.html"
-    success_url = reverse_lazy('index')
-    fields = '__all__'
 
-    def get_context_data(self,**kwargs):
-        perfiles = perfil.objects.values()
-
-        context=super(CreaConcursos,self).get_context_data(**kwargs)
-        context.update(completarPlantilla(self.request))
-        return context
 @method_decorator(group_required('profesores',login_url='/error/'), name='dispatch')
 class BorraLibro(DeleteView):
     model = libros
@@ -178,9 +210,20 @@ def vencimiento():
 #hilo=threading.Thread(target=vencimiento())
 #hilo.start()
 
-def registro1(request):
-    m = 3;
-    return render(request, 'registro.html')
+def registroCodigo(request):
+
+    if request.method == 'POST':
+        formulario = NewUserForm(data=request.POST)
+
+        valida=correoValidacion.objects.filter(correo=request.session["correosesion"],codigo=request.POST.get("codigo"))
+        if valida.exists():
+            user = User.objects.create_user(username=valida[0].usuario, first_name=valida[0].Apellido1,last_name=valida[0].Apellido2,email=valida[0].correo, password=valida[0].clave, )
+            user=authenticate(username=valida[0].usuario,password=valida[0].clave)
+            login(request, user)
+            return redirect('index')
+        else:
+            return redirect('registro')
+    return render(request, 'RegistroCodigo.html')
 
 def team(request):
     data=completarPlantilla(request)
@@ -196,22 +239,7 @@ def enviacorreo(Asunto,comentario,correo,origen):
             email.send()
 
 def enviacorreoValidar(request):
-        correo=request.GET.get('correo',None)
-        codigo=random.randint(10000, 20000)
-        try:
-            if User.objects.filter(email=correo).exists():
-
-                data = {'mensaje': 'El siguiente correo {0} existe'.format(correo)}
-            else:
-                email = EmailMessage('Registro a MisSoluciones', 'Su código de Validacion es {0}'.format(codigo), EMAIL_HOST_USER, [correo])
-                email.send()
-                correoValidacion.objects.create(correo=correo, codigo=codigo, validado=False)
-                data={'mensaje':'El codigo ha sido enviado a {0}'.format(correo)}
-        except:
-
-            data={'mensaje':'Error al enviar correo a {0}'.format(correo)}
-
-        return JsonResponse(data)
+        print("enviando...")
 
 
 
@@ -225,7 +253,7 @@ def LPaquetes(request,miperfil): #OK
     listaProfe = []
     for i in gente:
         listaProfe.append(i.id)
-    paquetesUsu = UsuarioPaq.objects.filter(usuario=request.user.id, vencido=False)
+    paquetesUsu = UsuarioPaq.objects.filter(usuario=request.user.id, vencido=False,activo=True)
     paquete=paquetes.objects.select_related('paquetePerfil').filter(paquetePerfil__nombrePerfil=miperfil)
     datos={'listaProfe':listaProfe,'au': request.user.is_authenticated,'perfil':miperfil,'novalida':"none","paquetes":paquete,'perfiles':perfiles,'mispaquetes':paquetesUsu,'estilo':"display:none"}
 
@@ -260,25 +288,29 @@ def logout(request): #OK
     return redirect('/')
 
 def registro(request): #OK
-    data={'form':NewUserForm(),'msj':'Ha ocurrido un problema, Intentelo nuevamente'}
-    correo=request.POST.get('email')
-    codigo = request.POST.get('codigo')
-    try:
-        codigoBD=correoValidacion.objects.get(correo=correo)
-    except correoValidacion.DoesNotExist:
-        print(f"No existe el registro con ")
+    data = {'form': NewUserForm(), 'msj': 'Ha ocurrido un problema, Intentelo nuevamente'}
+    if request.method == 'POST':
 
+        codigo = random.randint(10000, 20000)
+        correo=request.POST.get('email')
+        clave1 = request.POST.get('password1')
+        clave2 = request.POST.get('password2')
+        usuario1=request.POST.get('username')
+        apellido1=request.POST.get('first_name')
+        apellido2= request.POST.get('last_name')
+        request.session["correosesion"]=correo
+        valida=correoValidacion.objects.filter(correo=request.session["correosesion"]).exists()
+        if clave1==clave2 and valida==False:
+            try:
+                email = EmailMessage('Registro a MisSoluciones', 'Su código de Validacion es {0}'.format(codigo), EMAIL_HOST_USER,[correo])
+                email.send()
+                correoValidacion.objects.create(correo=correo, codigo=codigo, validado=False,clave=clave1, usuario=usuario1,Apellido1=apellido1,Apellido2=apellido2)
 
-    if request.method=='POST':
-        formulario=NewUserForm(data=request.POST)
-
-        if formulario.is_valid() and int(codigoBD.codigo)==int(codigo):
-            formulario.save()
-            user=authenticate(username=formulario.cleaned_data['username'],password=formulario.cleaned_data['password1'])
-            login(request,user)
-            return redirect('index')
-    data['msj']='Ha Ocurrido un erro'
+                return redirect('registroCodigo')
+            except:
+                return render(request, "registro.html", data)
     return render(request, "registro.html", data)
+
 def terminos(request):
 
     return render(request,"terminos.html",completarPlantilla(request))
@@ -303,7 +335,7 @@ def mipkt(request,pkt):
     paquetesUsu = UsuarioPaq.objects.filter(usuario=request.user.id, paqueteMio=paquetes.objects.get(paqueteCod=pkt))
     if len(paquetesUsu) !=0 :
         problemas=ProblemaPaq.objects.select_related("paqueteID","problemaID").filter(paqueteID__paqueteCod=pkt)
-        mispaquetes= UsuarioPaq.objects.filter(usuario=request.user.id)
+        mispaquetes= UsuarioPaq.objects.filter(usuario=request.user.id, activo=True)
         configura=completarPlantilla(request)
         configura['pkt']=pkt
         configura['problemas'] = problemas
@@ -318,7 +350,7 @@ def mipkt(request,pkt):
 
 
 
-		
+
 
 def TranferMovil(request,pkt,usuario):
     usuario=request.GET.get("usuario")
@@ -379,8 +411,9 @@ def verifConcur(request):
         data={'hacer':'nada'}
 
     return JsonResponse(data)
+
 def consultar(request):
-    solucionesTabla=soluciones.objects.all()
+    solucionesTabla=soluciones.objects.select_related("problemaLibro")
     paquetesUsu=UsuarioPaq.objects.filter(usuario=request.user.id,vencido=False)
     gente = User.objects.filter(groups__name__in=['profesores'])
     perfiles=perfil.objects.all()
@@ -389,6 +422,7 @@ def consultar(request):
     for i in gente:
         listaProfe.append(i.id)
     return render(request,'busquedas.html',{'listaProfe': listaProfe,'novalida': 'none','au': request.user.is_authenticated,'data':solucionesTabla, 'perfiles':perfiles, 'vpaq':vpaq, 'mispaquetes':paquetesUsu})
+
 def problema(request,libro):
     id=libros.objects.get(titulo=libro)
     problemas=soluciones.objects.filter(problemaLibro=id)
@@ -415,27 +449,53 @@ def versolucion(request,libro, numero):
     return render(request,"versolucion.html", dic)
 
 
+def versolucionProfe(request,libro, numero):
+
+    dic=completarPlantilla(request)
+    id=libros.objects.get(titulo=libro)
+    solucion=soluciones.objects.get(problemaLibro=id, problemaNumero=numero)
+
+
+
+    dic["solucion"]=solucion
+
+    return render(request,"versolucionProf.html", dic)
+
 
 def compraPKT(request): #OK
+
     lista=request.GET.getlist('lista[]', None)
-    lista1=[]
-    utilizados=[]
-    for y in lista:
-        if y not in lista1 and y != '':
-            lista1.append(y)
+    UnPKT=request.GET.get('paquete', None)
+
+    fuenteDePago=request.GET.get('fuenteDePago', None)
+    transacion=request.GET.get('Transac', None)
     usuarioID = int(request.user.id)
     fecha1 = fecha.date.today()
-    for  u in lista1:
-        puede = UsuarioPaq.objects.filter(usuario=usuarioID, paqueteMio=paquetes.objects.get(paqueteCod=u),activo=True)
+    lista1=[]
+    utilizados=[]
+    print(transacion)
+    if fuenteDePago=="Carrito":
+        for y in lista:
+            if y not in lista1 and y != '':
+                lista1.append(y)
 
-        if len(puede)==0:
-            UsuarioPaq.objects.create(usuario=usuarioID, fechaIni=fecha1,paqueteMio=paquetes.objects.get(paqueteCod=u), activo=True)
+        for  u in lista1:
+            puede = UsuarioPaq.objects.filter(usuario=usuarioID, paqueteMio=paquetes.objects.get(paqueteCod=u),activo=True)
 
-        else:
-            utilizados.append(u)
+            if len(puede)==0:
+                UsuarioPaq.objects.create(usuario=usuarioID, fechaIni=fecha1,paqueteMio=paquetes.objects.get(paqueteCod=u), activo=True)
+
+            else:
+                utilizados.append(u)
+        data={'utilizados':list(utilizados),'sms':"1transacion"}
+    if fuenteDePago=="NoCarrito":
+       puede = UsuarioPaq.objects.filter(usuario=usuarioID, paqueteMio=paquetes.objects.get(paqueteCod=UnPKT),activo=True)
+       if len(puede)==0:
+            UsuarioPaq.objects.create(usuario=usuarioID, fechaIni=fecha1,paqueteMio=paquetes.objects.get(paqueteCod=UnPKT), activo=False, transac=transacion)
+            data={'sms':"2transacion"}
 
 
-    data={'utilizados':list(utilizados),'sms':'Compra registrada'}
+
     return JsonResponse(data)
 
 def borrarPaquetes(request):
@@ -484,6 +544,30 @@ def getProblemas(request):
 
     return JsonResponse(data)
 
+def BuscaTransaccion(request):
+
+    transaccion=request.GET.get("transac",None)
+    try:
+        buscarTransa=UsuarioPaq.objects.get(transac=transaccion)
+    except:
+        buscarTransa=""
+
+    if buscarTransa !="":
+        data= {'SMS':"Transaccíon,{1}, es Valida,el valor de la misma es {0}".format(buscarTransa.paqueteMio.paquetePrecio,transaccion ), 'estado':'ok'}
+        return JsonResponse(data)
+
+    else:
+        data= {'SMS':"No Existe esa Transaccíon,{0}",'estado':'Nok'}
+        return JsonResponse(data)
+
+def ActivarTransaccion(request):
+
+    transaccion=request.GET.get("transac",None)
+    activar=UsuarioPaq.objects.filter(transac=transaccion).update(activo=True)
+
+
+    data= {'SMS':transaccion,'estado':'Nok', "act":activar1}
+    return JsonResponse(data)
 def index(request):
     gente = User.objects.filter(groups__name__in=['profesores'])
     var = True
@@ -493,7 +577,7 @@ def index(request):
     orden={}
 
     pket=""
-    paquetesUsu=UsuarioPaq.objects.filter(usuario=request.user.id,vencido=False)
+    paquetesUsu=UsuarioPaq.objects.filter(usuario=request.user.id,vencido=False,activo=True)
 
     perfiles=perfil.objects.values()
     vpaq= paquetes.objects.all()
@@ -502,20 +586,23 @@ def index(request):
         admin="pointer-events:none;cursor:default"
     if  not request.user.is_authenticated:
         pket="pointer-events:none;cursor:default"
-    u=soluciones.objects.values('problemaLibro').annotate(num_books=Count('problemaLibro'))
+    u=soluciones.objects.select_related("problemaLibro").values('problemaLibro',"problemaLibro__titulo").annotate(num_books=Count('problemaLibro'))
+    cadena=""
+    for hh in u:
+        cadena=cadena+""+hh["problemaLibro__titulo"]+"("+str(hh["num_books"])+")"+","+""
     total=soluciones.objects.count()
     for i in range(0,len(u)):
         libro=libros.objects.get(id=int(u[i]['problemaLibro']))
         orden[libro.titulo]=u[i]['num_books']
 
-    return render(request,"index.html", {"var":var,"listaProfe":listaProfe,'novalida':'none','perfiles':perfiles,'mispaquetes':paquetesUsu,'libros':orden,'total':total,'estilo':"display:none","pket":pket, "vpaq": vpaq,"temas":temas,'au':request.user.is_authenticated})
+    return render(request,"index.html", { "problXLibro":cadena,"var":var,"listaProfe":listaProfe,'novalida':'none','perfiles':perfiles,'mispaquetes':paquetesUsu,'libros':orden,'total':total,'estilo':"display:none","pket":pket, "vpaq": vpaq,"temas":temas,'au':request.user.is_authenticated})
 
 def completarPlantilla(request):
     gente = User.objects.filter(groups__name__in=['profesores'])
     listaProfe= []
     for i in gente:
         listaProfe.append(i.id)
-    paquetesUsu=UsuarioPaq.objects.filter(usuario=request.user.id,vencido=False)
+    paquetesUsu=UsuarioPaq.objects.filter(usuario=request.user.id,vencido=False,activo=True)
     perfiles=perfil.objects.values()
     vpaq= paquetes.objects.all()
     temas=tematicas.objects.all()
@@ -534,13 +621,13 @@ def getPaquetes(request):
 
 def getDetalles(request):
     cadena=request.GET.get('CodigoP', None).split(',')
-    
+
     paquetes1=paquetes.objects.values().get(paqueteCod=cadena[0])
-    
+
     lista=[]
     for h in paquetes1.keys():
        lista.append(paquetes1[h])
-       
+
     data= {'paquetes':list(lista)}
     return JsonResponse(data)
 def contac(request):
@@ -558,14 +645,20 @@ def contac(request):
 
     return render(request,"contactanos.html",data)
 def poblarPaquetes(request):
-    problemas=request.GET.getlist('problemas[]', None)
-    paquete=request.GET.get('paquete', None)
 
+    problemas=request.GET.getlist('problemas[]', None)
+
+
+    paquete=request.GET.get('paquete', None)
+    a = paquetes.objects.get(paqueteCod=paquete)
+    CantidadProbl=a.paqueteCant
     for u in problemas:
         ProblemaPaq.objects.create(problemaID=soluciones.objects.get(problemaNumero=u),paqueteID=paquetes.objects.get(paqueteCod=paquete))
-
+        CantidadProbl+=1
+    paquetes.objects.filter(paqueteCod=paquete).update(paqueteCant=CantidadProbl)
     data={'t':problemas}
     return JsonResponse(data)
+
 #@login_required(login_url='/login/')
 def Tuerror(request):
     mensaje={"mensaje":"lalalalal"}
@@ -598,7 +691,7 @@ def BuscaProblemas(request):
     for u in problemas1:
         if u.problemaNumero not in lista:
             lista.append(u.problemaNumero)
-    
+
     data= {'problemas':list(lista)}
 
     return JsonResponse(data)
@@ -634,6 +727,7 @@ def cargar(request): #agrega libros
    configuracion['novalida'] = "none"
    configuracion['perfiles'] = perfiles
    if request.method=="POST":
+
        formulario=Formulario(data=request.POST, files=request.FILES)
        if formulario.is_valid():
            formulario.save()
@@ -668,7 +762,7 @@ def Creacodigo(request):
     fecha1=fecha.datetime.now()
 
     codigo=str(Cod1[0].upper())+str(Cod2[0].upper())+str(Cod3[0].upper())+str(fecha1.year)+str(fecha1.month)+str(fecha1.day)+str(fecha1.hour)+str(fecha1.minute)
-    
+
     data= {'codigo':codigo}
     return JsonResponse(data)
 
@@ -714,3 +808,13 @@ def send(request):
     new_message = mensajes.objects.create(mensaje=message, usuario=username, sala=room_id)
     new_message.save()
     return HttpResponse('Message sent successfully')
+
+
+def donativo(request):
+        return render(request,'donativo.html')
+
+def cargo(request):
+        redirect('Gracias')
+
+def gracias(request):
+        render(request,'garcias.html')

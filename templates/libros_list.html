@@ -3,23 +3,27 @@
 <div  style="height: 20px" class="jumbotron">
 <div style="margin-left:auto;margin-right: auto;">
     <br>
-    <p>Listado de Libros o Guías de MisSoluciones</p>
+    <h3 class="card-title">Listado de Libros</h3>
+    <br>
  </div>
 </div>
 <p>
-
-   <a href="{% url 'CreaLibro' %}">Agregar libro</a>
+<br>
+   <a href="{% url 'CreaLibro' %}">AÑADIR LIBRO</a>
 
 </p>
-<table class="table table-dark table-hover">
+<div class="card">
+
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
  <thead>
       <tr>
-        <th>Titulo del libro</th>
-         <th>Autor</th>
-           <th>Edición</th>
-
-        <th>Borrar</th>
-        <th>Modificar</th>
+        <th>Título del libro</th>
+        <th>Autor</th>
+        <th>Edición</th>
+        <th>Eliminar</th>
+        <th>Editar</th>
 
       </tr>
     </thead>
@@ -30,10 +34,21 @@
         <td>{{ libro.autor }}</td>
         <td>{{ libro.edicion }}</td>
 
-        <td><button  class="btn btn-warning" onclick=""><a href="{% url 'borralibros' libro.id %}">Borrar</a></button></td>
-        <td><button  class="btn btn-warning" onclick=""><a href="{% url 'librosAct' libro.id %}">Modificar</a></button></td>
+        <td><button  class="btn btn-outline-primary btn-block" onclick=""><a href="{% url 'borralibros' libro.id %}">ELIMINAR</a></button></td>
+        <td><button  class="btn btn-outline-primary btn-block" onclick=""><a href="{% url 'librosAct' libro.id %}">EDITAR</a></button></td>
     </tr>
 {% endfor %}
 </tbody>
+<tfoot>
+    <tr>
+       <th>Título del libro</th>
+        <th>Autor</th>
+        <th>Edición</th>
+        <th>Eliminar</th>
+        <th>Editar</th>
+    </tr>
+ </tfoot>
 </table>
+</div>
+</div>
 {% endblock %}

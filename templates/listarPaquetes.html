@@ -1,27 +1,29 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block contenido %}
-<div  style="height: 20px" class="jumbotron">
-<div style="margin-left:auto;margin-right: auto;">
-  <br>
-  <p>Paquetes disponibles de {{perfil}}</p>
- </div>
-</div>
-   <div class="container">
-  <h2>Paquetes disponibles de {{perfil}}</h2>
 
-  <table class="table table-dark table-hover">
+  <h2>Paquetes disponibles de {{perfil}}</h2>
+</br>
+
+<div class="card">
+
+              <!-- /.card-header -->
+<div class="card-body">
+                <table id="example2" class="table  table-bordered table-striped ">
     <thead>
       <tr>
-        <th>Codigo del Paquete</th>
-        <th>Problemas resueltos</th>
-        <th>Precio</th>
-        <th>Dias Activo</th>
-        <th>Descripción</th>
+        <th>PAQUETE</th>
+        <th>PROBLEMAS</th>
+        <th>PRECIO</th>
+        <th>VIGENCIA</th>
+        <th>DESCRPCIÓN</th>
         {% if request.user.is_authenticated%}
-        <th>Adquirir</th>
+        <th>AÑADIR</th>
         {%endif%}
-        <th>Ver</th>
+        {% if request.user.is_authenticated%}
+        <th>COMPRAR</th>
+        {%endif%}
+        <th>Ver Problemas</th>
       </tr>
     </thead>
     <tbody>
@@ -30,18 +32,195 @@
         <td>{{ u.paqueteCod }}</td>
         <td>{{u.paqueteCant  }}</td>
         <td>{{u.paquetePrecio  }}</td>
-        <th>{{u.paqueteDias }}</th>
+        <th>{{u.paqueteDias }} días</th>
         <td>{{ u.paqueteDescr}}</td>
         {% if request.user.is_authenticated %}
-        <td><button value={{u.paquetePrecio}} id={{u.paqueteCod}} name={{u.paquetePrecio}} class="btn btn-warning" onclick="agregarCarro(this)" >Adquirir</button></td>
+        <td><button value={{u.paquetePrecio}} id={{u.paqueteCod}} name={{u.paquetePrecio}}  onclick="agregarCarro(this)" data-toggle="modal" data-target="#exampleModalCenter" ><i><img src="{% static 'img/icons8-comprar.gif' %}" alt="" style="width:42px;height:42px;">Añadir al Carrito</i></button></td>
         {%endif%}
-        <td><a   class="btn btn-success " href="{% url 'verPaquetes' u.paqueteCod %}" >Ver</a></td>
+        {% if request.user.is_authenticated %}
+        <td><button onclick="modalcompra1(this)" name={{u.paqueteCod}} type="button" class="btn btn-info"  data-toggle="modal" data-target="#staticBackdrop">
+                  PAGAR
+                </button></td>
+        {%endif%}
+       <td><a href="{% url 'verPaquetes' u.paqueteCod %}" ><i><img src="{% static 'img/icons8-para-hacer-96.png' %}" alt="" style="width:42px;height:42px;">Ver Paquete</i></a></td>
       </tr>
     {% endfor %}
 
     </tbody>
+    <tfoot>
+    <tr>
+       <th>Paquete</th>
+        <th>Problemas</th>
+        <th>Precio</th>
+        <th>Activo</th>
+        <th>Descripción</th>
+        {% if request.user.is_authenticated%}
+        <th>Adquirir</th>
+        {%endif%}
+        <th>Pagar</th>
+        <th>Ver Problemas</th>
+    </tr>
+ </tfoot>
   </table>
+  </div>
+  </div>
+
+  <div class="modal fade" id="pruebasss" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close d-flex align-items-center justify-content-center" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true" class="ion-ios-close"></span>
+		        </button>
+		      </div>
+		      <div class="row no-gutters">
+			      <div class="col-md-6 d-flex">
+				      <div class="modal-body img d-flex" style="background-image: url({% static 'img/Escanear-código-QR.jpg'   %});"></div>
+
+				    </div>
+				    <div class="col-md-6 d-flex">
+				      <div class="modal-body d-flex align-items-center">
+				      	<div class="text w-100 text-center">
+				      		<h2 class="mb-0">100<span>%</span>Seguro</h2>
+				      		<h4 class="mb-4">Un curso, mejor preparado</h4>
+				      		<form action="#" class="code-form">
+		                         <div class="form-group d-flex">
+		                        <input type="text" class="form-control" placeholder="Insertar Código" id="Trans56">
+		                </div>
+		              </form>
+		               <button onclick="modalcompra2(this)" name="NoCarrito" type="button" class="btn btn-primary d-block py-3" data-dismiss="modal">COMPRAR</button>
+
+				      	</div>
+				      </div>
+				    </div>
+				  </div>
+		    </div>
+		  </div>
+		</div>
+
+
+
+
+
+
+
+
+
+  <div class="modal fade" id="modal-info">
+        <div class="modal-dialog">
+          <div class="modal-content bg-info">
+  <br>
+  <br>
+  <p   class="text-justify text-dark" style='margin-right:auto;margin-left:auto;display:block;margin: 25px'>
+
+              <img  src="{% static 'img/qrcuenta.jpg'   %}" style='margin-right:auto;margin-left:auto;display:block;margin: 20px' align="right"> Una vez realizado el pago se le habilitara el paquete en las proximas 12 Horas maximo </p>
+
+              <input type="text" class="form-control" placeholder="Teclee el numero de la Transacción realizada" id="Trans1">
+
+
+            <div class="modal-footer justify-content-between">
+              <button onclick="modalcompra2(this)" name="NoCarrito" type="button" class="btn btn-outline-light" data-dismiss="modal">Comprar</button>
+
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Añadir al Carrito</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Usted ha añadido un nuevo Paquete, puede seguir revisando nuestros servicios antes de Ejecutar el Pago
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog"> <div class="modal-content">
+        <div class="modal-body">
+          <div class="text-right"><i class="fa fa-close close" data-dismiss="modal"></i></div>
+           <div class="tabs mt-3">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                   <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="visa-tab" data-toggle="tab" href="#visa" role="tab" aria-controls="visa" aria-selected="true">
+
+                            <img src="{% static 'img/enz.png' %}">
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="paypal-tab" data-toggle="tab" href="#paypal" role="tab" aria-controls="paypal" aria-selected="false">
+
+                     <img src="{% static 'img/trans.png' %}">
+                    </a>
+                    </li>
+                </ul>
+                   <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="visa" role="tabpanel" aria-labelledby="visa-tab">
+                           <div class="mt-4 mx-4">
+                               <div class="text-center"> <h5>Enzona</h5> </div>
+                             <div class="form text-center">
+                                 <img src="{% static 'img/enzona.png' %}">
+                                  <input type="text" id="TransZona" name="name" class="form-control" required="required"> <span>ID de Transferencia</span>
+                                  <div class="btn-toolbar" role="toolbar">
+                                  <div class="px-5 pay btn-group">
+                                     <button onclick="modalcompra2(this)"  id="EnZona" class="btn btn-success"  data-dismiss="modal">Enviar</button>
+                                 </div>
+
+                                 <div class="px-5 pay btn-group">
+                                     <button class="btn btn-success" data-dismiss="modal">Cerrar</button>
+                                 </div>
+                                 </div>
+                             </div>
+                       </div>
+                    </div>
+                       <div class="tab-pane fade" id="paypal" role="tabpanel" aria-labelledby="paypal-tab">
+                           <div class="form text-center">
+                               <div class="text-center"> <h5>Transfermovil</h5> </div>
+                              <img src="{% static 'img/transfermovil.png' %}">
+
+                                 <input type="text" id="TransMovil" name="name" class="form-control" required="required"> <span>ID de Transferencia</span>
+                                  <div class="btn-toolbar" role="toolbar">
+                                  <div class="px-5 pay btn-group">
+                                     <button onclick="modalcompra2(this)"  id="TranferMovil" class="btn btn-success"  data-dismiss="modal">Enviar</button>
+                                 </div>
+
+                                 <div class="px-5 pay btn-group">
+                                     <button class="btn btn-success" data-dismiss="modal">Cerrar</button>
+                                 </div>
+                                 </div>
+                           </div>
+                       </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+
+
+
+<script>
+     $('#example2').stacktable();
+</script>
+
 <script>
     function compraPKT(b) {
 
@@ -72,6 +251,9 @@
 
 
   </script>
+  <script type="text/javascript" src="{% static 'pagos/bootstrap.bundle.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'pagos/ jquery.min.js' %}"></script>
+
 <script>
    function agregarCarro(u){
       var codigo=u.id;
@@ -94,6 +276,53 @@
 
       }
  </script>
+ <script>
+    function modalcompra1(f) {
+   var g=f.name
+
+   $("#pruebasss").attr("title",g)
+
+
+    }
+
+
+</script>
+ <script>
+    function modalcompra2(k) {
+    var paquete=$("#pruebasss").attr("title");
+
+    var fuenteDePago="NoCarrito";
+    if (k.id=="EnZona"){
+    var Transac=$("#TransZona").val();
+ }
+ if (k.id=="TranferMovil"){
+    var Transac=$("#TransMovil").val();
+ }
+
+    $.ajax({
+        url: '{% url "compraPKT" %}',
+        data: {
+
+          'paquete':paquete,
+          'fuenteDePago':fuenteDePago,
+          'Transac':Transac
+
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data) {
+
+              alertify.success(data.sms);
+              $("#TransZona").val("");
+              $("#TransMovil").val("")
+
+
+
+}
+          }
+        })
+    }
+</script>
 <script>
    function borrarCarro(a){
       var codigo=a.id;

@@ -2,57 +2,108 @@
 {% extends "index.html" %}
 {% load static %}
 {% block contenido %}
- <body>
+<script type="text/javascript" src="{% static 'filtros/qunit.js' %}"></script>
+<script type="text/javascript" src="{% static 'filtros/polyfill.js' %}"></script>
 
- <section class="ftco-section">
-     <div class="container">
-           <div class="row">
-                 <div class="col-md-12">
-					<h3 class="h5 mb-4 text-center">Biblioteca de Soluciones</h3>
-					<div class="table-wrap">
 
-<table  class="table myaccordion table-hover" id="example1" id="accordion" >
-        <thead>
+
+<br>
+<br>
+
+<div >
+        <div class="card-header">
+                <h3 class="card-title">Biblioteca de Soluciones</h3>
+        </div>
+              <!-- /.card-header -->
+        <div class="card-body col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <table id="example1" class="table table-bordered table-striped">
+        <thead >
             <tr>
-                <th>Número</th>
-                <th>Libro</th>
-                <th>Tema</th>
-                <th>Solucionado</th>
-                <th>&nbsp;</th>
+                <th align="center">Asignatura</th>
+                <th align="center">Libro</th>
+                <th align="center">Autor</th>
+                <th align="center">Edición</th>
+                <th align="center">Número</th>
+                <th align="center">Tema</th>
+                <th align="center">Solucionado por</th>
+                {% if request.user.id in listaProfe or request.user.username == "Estudiantes"%}
+                <th align="center">Ver</th>
+                {% endif %}
+                <th align="center">Revisión</th>
 
             </tr>
         </thead>
-        <tbody>
+        <tbody class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             {% for u in data %}
 
-            <tr data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                <td scope="row" >{{ u.problemaNumero }}</td>
-                <td >{{ u.problemaLibro }}</td>
+            <tr>
+                <td scope="row" >{{ u.problemaLibro.perfilId }}</td>
+                <td>{{ u.problemaLibro }}</td>
+                <td>{{ u.problemaLibro.autor }}</td>
+                <td>{{ u.problemaLibro.edicion }}</td>
+                <td>{{ u.problemaNumero }}</td>
                 <td>{{ u.problemaTema }}</td>
                 <td>{{ u.problemaSolucionadoPor }}</td>
-               <td><i class="fa" aria-hidden="true"></i></td>
+                {% if request.user.id in listaProfe or  request.user.username == "Estudiantes" %}
+                <td><a href="{% url 'versolucionProfe' u.problemaLibro u.problemaNumero %}" class="btn btn-success">Ver</a></td>
+                 {% endif %}
+                <td>{{ u.problemaRev }}</td>
             </tr>
             {% endfor %}
 
         </tbody>
         <tfoot>
             <tr>
-                <th>Número</th>
+                <th>Asignatura</th>
                 <th>Libro</th>
+                <th>Autor</th>
+                <th>Edición</th>
+                <th>Número</th>
                 <th>Tema</th>
-                <th>Solucionado</th>
-                <th>&nbsp;</th>
+                <th>Solucionado por</th>
+                {% if request.user.id in listaProfe or request.user.username == "Estudiantes"%}
+                <th>Ver</th>
+                 {% endif %}
+                <th>Revisión</th>
             </tr>
 
         </tfoot>
     </table>
-     </div>
-                 </div>
-                 </div>
-         </div>
-</section>
- </body>
+        </div>
+</div>
+
+
+
+<script type="text/javascript" src="{% static 'filtros/tablefilter.js' %}"></script>
+<script type="text/javascript" src="{% static 'filtros/test-exact-query-match.js' %}"></script>
+<script>
+    $(document).ready(function(){
+    var table=$('#example1').DataTables({
+        orderCellsTop:true,
+        fixedHeader:true
+    });
+
+    });
+    $('#example1 thead tr').clone(true).appendTo('#example1 thead');
+    $('#example1 thead tr:eq(1) th').each(function(i)){
+        var title=$(this).text();
+        $(this).html('<input type="text" placeholder="Buscar" />');
+        $('input',this).on('keyup change', function() {
+            if ( table.column(i).search() !== this.value ){
+                table
+                .column(i)
+                .search(this.value)
+                .draw();
+            }
+            });
+    };
+
+
 </html>
+<script>
+    $('#example1').stacktable({headIndex:0});
+
+</script>
  {% endblock %}
 
 

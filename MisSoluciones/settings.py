@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import MySQLdb
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = '6f6g%62c^-d8r^dljr#4d7xg&d4(8nmg)9fh=w9an133^*-u60'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['missoluciones2022.pythonanywhere.com']
 
 
 # Application definition
@@ -39,9 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap4',
     'Soluciones',
+    'rest_framework',
+    'django_crontab',
+
 
 
 ]
+CRONJOBS = [('5 23 * * *', 'Soluciones.evento.actvivar_pqt')]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -76,11 +81,21 @@ WSGI_APPLICATION = 'MisSoluciones.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+#DATABASES = {
+    #'default': {
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #}
+#}
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'missoluciones202$misSoluciones2023',
+        'USER': 'missoluciones202',
+        'PASSWORD': 'Tamara2023',
+        'HOST': 'missoluciones2022.mysql.pythonanywhere-services.com',
+        'PORT': '3306',
     }
 }
 
@@ -89,18 +104,10 @@ DATABASES = {
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
+
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    }
 ]
 
 
@@ -124,10 +131,11 @@ X_FRAME_OPTIONS="SAMEORIGIN"
 LOGIN_REDIRECT_URL='/index/'
 LOGOUT_REDIRECT_URL='/index/'
 STATIC_URL = '/static/'
+STATIC_ROOT = '/home/missoluciones2022/MisSoluciones/static'
 MEDIA_URL = '/problemas/'
 MEDIA_ROOT =os.path.join(BASE_DIR, 'problemas')
 #MEDIA_ROOT =os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 
 
@@ -137,11 +145,11 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = 'misoluciones22@yandex.com'
-EMAIL_HOST_PASSWORD = 'bowxphpyitroaono'
+EMAIL_HOST_PASSWORD = 'gejjtdbxardnvarx'
+
 #RECIPIENT_ADDRESS = 'ignaciohg2022@gmail.com'
-#ClaveTamara2022
-
-
+#Clave para correo Yandex Tamara2023**
+#Clave para correo Gmail Gutierrez2022*
 
 
 

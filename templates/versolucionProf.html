@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+{% extends "index.html" %}
+{% load static %}
+{% block contenido %}
+<span class="label label-info" id="labelproblema">{{solucion.problemaNumero}}</span>
+<span class="label label-info" id="labellibro">{{solucion.problemaLibro}}</span>
+<div class="row" style="width: 100%;height: 100%" >
+
+  <div>
+        <canvas  class="col-lg-10 col-md-10 col-sm-12 col-xs-12" id="my_canvas" ></canvas>
+  </div>
+
+<div  >
+
+  <img class="col-lg-10 col-md-10 col-sm-10 col-xs-10" src="{{solucion.problemaProblema.url}}" >
+    <br>
+    <br>
+    <hr size="8px" color="black" />
+
+  <div class="row">
+
+      <audio class="col-lg-10 col-md-10 col-sm-10 col-xs-10" style="margin-left: 5px" id="medio" controls>Escuchar
+      {%if solucion.problemaVideo %}
+              <source src="{{solucion.problemaVideo.url}}">
+
+       {% else %}
+        <source src="">
+       {%endif%}
+</audio>
+  </div>
+   <hr size="8px" color="black" />
+ {% if not request.user.username == "Estudiantes" %}
+ <div class="row">
+      <button class="btn btn-success"  onclick="revisado()">Registrar Evaluación</button>
+
+  <div class="form-group col">
+
+  <select class="form-control" id="sel1" onchange="escribir()" >
+    <option>Escoja una Opción</option>
+    <option>OK</option>
+    <option>Mal</option>
+
+  </select>
+
+</div>
+  </div>
+ {% endif%}
+  <div  class="form-group row" id="comment1">
+  <label  for="comment">Comment:</label>
+  <textarea  style="visibility:hidden" class="form-control" rows="5" id="comment"></textarea>
+</div>
+
+ </div>
+ </div>
+ <iframe src="https://chat.chatzona.org/index.html#nick=&channel=cinematica" width="100%" height="500" frameborder="0"></iframe><br><small>Servicio por <a href="https://www.chatzona.org">ChatZona</a></small>
+<style>
+    .contenedor{
+        position:absolute;
+    }
+    .pdf{
+        position:relative;
+    }
+    .bloqueo{
+        position:relative;
+        background-color:rgba(255,255,255,0.00);
+        width:830px;
+        height:850px;
+    }
+    </style>
+
+<script>
+    function escribir(){
+        var valor=$("#sel1").val()
+
+    if (valor == "Mal") {
+
+   $("#comment").css("visibility", "visible");
+   } else {  $("#comment").css("visibility", "hidden"); }
+
+
+
+          }
+</script>
+</script>
+    <script>
+    function revisado(){
+
+    var obs = $("#comment").val();
+    var rev = $("#sel1").val();
+    var libro = $("#labellibro").text();
+    var problema = $("#labelproblema").text();
+
+    $.ajax({
+        url: '{% url "revisadoo" %}',
+        data: {
+
+          'revi': rev,
+          'Obs':obs,
+          'libro': libro,
+          'problema':problema
+
+        },
+
+
+        dataType: 'json',
+        success: function (data) {
+          if (data) {
+
+              alert(data.s)
+
+
+}
+          }
+        })
+
+}
+
+
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>
+    <script>
+        const loadingTask = pdfjsLib.getDocument('{{solucion.problemaSolucion.url}}'); //reinier acaba de resolver esto
+    loadingTask.promise.then(doc => {
+
+        doc.getPage(1).then(page => {
+
+            var scale = 1.5;
+            var viewport = page.getViewport({scale: scale});
+
+            // Prepare canvas using PDF page dimensions
+            var canvas = document.getElementById('my_canvas');
+            var context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context
+            var renderContext = {
+              canvasContext: context,
+              viewport: viewport
+            };
+            var renderTask = page.render(renderContext);
+
+        });
+    });
+    </script>
+
+
+{% endblock  %}

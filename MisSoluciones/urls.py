@@ -22,10 +22,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-
-
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', index,name='index'),
@@ -35,15 +31,18 @@ urlpatterns = [
     path('formaPKT/', formaPket, name="formaPket"), #OK
     path('error/', Tuerror, name="Tuerror"), #OK
     path('versolucion/<str:libro>/<str:numero>', versolucion,name='versolucion'), #OK
+    path('versolucionProfe/<str:libro>/<str:numero>', versolucionProfe,name='versolucionProfe'), #OK
     path('login/', Milogin, name="Milogin"), #OK
     path('logout/', logout, name="logout"), #OK
     path('registrarse/', registro, name="registro"), #OK
+    path('registrarsefin/', registroCodigo, name="registroCodigo"), #OK
     path('', index, name="index"), #OK
     path('ajax/compraPKT/', compraPKT, name='compraPKT'), #OK
+    path('ajax/revisadoo/', revisadoo, name='revisadoo'), #OK
     path('tematicas_actualizar/<slug:pk>', TematicasAct.as_view(),name='TematicasAct'), #OK
     path('tematicas_list', Tematicas.as_view(),name='listatemas'), #OK
     path('tematicas_form/', CreaTemas.as_view(), name='Createmas'), #OK
-    path('concursos_form/', CreaConcursos.as_view(), name='CreaConcursos'), #OK
+
     path('MuestraConcu/', MuestraConcu, name='MuestraConcu'), #OK
     path('borra_temas/<slug:pk>', BorraTemas.as_view(template_name='temas_confirm_delete.html'),name='borraTemas'), #OK
     path('libros_actualizar/<slug:pk>', librosAct.as_view(),name='librosAct'), #OK
@@ -54,6 +53,8 @@ urlpatterns = [
     path('concursos/', concur, name='concur'), #OK
     path('ajax/registrodeConcur/', registrodeConcur, name='registrodeConcur'),
     path('ajax/getProblemas/', getProblemas, name='getProblemas'),
+    path('ajax/BuscaTransaccion/',BuscaTransaccion, name='BuscaTransaccion'),
+    path('ajax/ActivarTransaccion/',ActivarTransaccion, name='ActivarTransaccion'),
     path('ajax/historial/', historial, name='historial'),
     path('ajax/enviacorreoValidar/', enviacorreoValidar, name='enviacorreoValidar'),
     path('verPaquetes/<str:codigo>', verPaquetes,name="verPaquetes"), #OK

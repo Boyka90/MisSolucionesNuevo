@@ -8,8 +8,7 @@ from django.core.exceptions import ValidationError
 class FormularioPaquetes(forms.ModelForm):
     class Meta:
         model=paquetes
-        fields =("paqueteCod",
-                 "paqueteCant","paquetePrecio","paqueteDias","paqueteDescr","paquetePerfil")
+        fields =("paqueteCod","paquetePrecio","paqueteDias","paqueteDescr","paquetePerfil")
 class Formrespuestas(forms.ModelForm):
 
     class Meta:
@@ -19,7 +18,7 @@ class Formrespuestas(forms.ModelForm):
 class Formulario(forms.ModelForm):
     class Meta:
         model = soluciones
-        fields ='__all__'
+        fields =("problemaNumero","problemaProblema","problemaLibro","problemaSolucion","problemaVideo","problemaSolucionadoPor","problemaTema")
 
 class NewUserForm(UserCreationForm):
     class Meta:

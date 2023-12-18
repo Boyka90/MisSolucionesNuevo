@@ -15,8 +15,16 @@
             <div class="well well-sm">
 
                 <div class="col-xs-4">
+                    <div class="form-group">
+  <label for="Trans">Transaccion a Activar:</label>
+  <input type="text" class="form-control" id="Trans">
+  <br>
+    <button type="button" onclick="buscarTransaccion()" class="btn btn-primary"  id="BuscaTransaccion">Buscar transacción</button>
+    <button type="button" onclick="ActivarTransaccion()" class="btn btn-primary" id="ActivaTransaccion" disabled>Activar</button>
+</div>
         <label for="paquetes">Paquetes disponibles:</label>
         <select class="form-control" id="paquetes" onchange="BuscaT()">
+
         {% for i in paquetes %}
         <option>{{i.paqueteCod}}</option>
         {% endfor %}
@@ -264,6 +272,58 @@ function poblarPaquetes(){
                for(var ii=0;ii<data.listapaquetes.length;ii++){
               $("#paquetes").append('<option value='+data.listapaquetes[ii]+'>'+data.listapaquetes[ii]+'</option>');
           }
+
+
+	}
+
+}
+          )}
+ </script>
+ <script>
+    function buscarTransaccion(){
+
+        var transac=$("#Trans").val() ;
+
+       $.ajax({
+        url: '{% url "BuscaTransaccion" %}',
+        data: {
+
+            'transac':transac,
+
+        },
+        dataType: 'json',
+        success: function (data) {
+               if (data.estado=="Nok")
+              {
+              transac=$("#Trans").val(data.SMS);
+          }  else
+              {
+              transac=$("#Trans").val(data.SMS);
+              $("#ActivaTransaccion").removeAttr("disabled");
+              $("#Trans").attr('disabled', true);
+          }
+
+
+	}
+
+}
+          )}
+ </script>
+ <script>
+function ActivarTransaccion(){
+        var transac=$("#Trans").val().split(",")[1];
+
+
+       $.ajax({
+        url: '{% url "ActivarTransaccion" %}',
+        data: {
+            'transac':transac,
+
+
+        },
+        dataType: 'json',
+        success: function (data) {
+               alert(data.act)
 
 
 	}

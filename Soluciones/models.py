@@ -9,7 +9,9 @@ class perfil(models.Model):
     def __str__(self):
         return '%s'%(self.nombrePerfil)
 
+
 class tematicas(models.Model):
+
     temaNombre=models.CharField(max_length=50, null=True,verbose_name='Nombre del Tema')
     perfilId=models.ForeignKey(perfil,on_delete=models.CASCADE,null=True,verbose_name='Perfil')
     agregadoPor = models.ForeignKey(User,on_delete=models.CASCADE,null=True,verbose_name='Agregado por:')
@@ -24,19 +26,29 @@ class libros(models.Model):
     perfilId=models.ForeignKey(perfil,on_delete=models.CASCADE,null=True,verbose_name="Perfil" )
     def __str__(self):
         return self.titulo
+
+
+
 class correoValidacion(models.Model):
+    usuario=models.CharField(max_length=50, null=True,verbose_name='Usuario')
+    Apellido1 = models.CharField(max_length=50, null=True, verbose_name='Usuario')
+    Apellido2 = models.CharField(max_length=50, null=True, verbose_name='apellido1')
+    clave = models.CharField(max_length=50, null=True, verbose_name='clave')
     correo=models.EmailField()
     codigo=models.IntegerField()
     validado=models.BooleanField()
 
+
+
 class comentarios(models.Model):
-    comentario=models.TextField(max_length = 50)
+    comentario=models.CharField(max_length = 50)
     correo=models.EmailField()
     tipo=models.CharField(max_length = 50)
     usuario=models.ForeignKey(User, on_delete=models.CASCADE)
     nombre=models.CharField(null=True,max_length = 50)
-    respuesta=models.TextField(null=True,max_length = 150)
+    respuesta=models.CharField(null=True,max_length = 150)
     responsable=models.IntegerField(null=True)
+
 class solucionadores(models.Model):
     solucionadorNombre=models.CharField(max_length = 50)
     solucionadorPais=models.CharField(max_length = 50)
@@ -48,7 +60,7 @@ class solucionadores(models.Model):
 class paquetes(models.Model):
     paqueteID=models.AutoField(primary_key=True)
     paqueteCod=models.CharField(max_length=50, null=True,verbose_name="Codigo del paquete")
-    paqueteCant=models.IntegerField(null=True, verbose_name="Cantidad de problemas que contiene")
+    paqueteCant=models.IntegerField(null=True, verbose_name="Cantidad de problemas que contiene",default=0)
     paquetePrecio=models.IntegerField(null=True,verbose_name="Precio")
     paqueteDias=models.IntegerField(null=True,verbose_name="Dias que estará activo")
     paqueteDescr=models.CharField(max_length=50, null=True,verbose_name="Descripción")
@@ -66,10 +78,12 @@ class soluciones(models.Model):
     problemaID=models.AutoField(primary_key=True)
     problemaLibro=models.ForeignKey(libros, on_delete=models.CASCADE,null=True,verbose_name="Libro o Guia")
     problemaSolucion=models.FileField(upload_to='soluciones',null=True,verbose_name="Documento de solución")
-    problemaVideo=models.FileField(upload_to='videos',null=True,verbose_name="Audio de explicación")
+    problemaVideo=models.FileField(upload_to='videos',null=True,blank=True,verbose_name="Audio de explicación")
     problemaSolucionadoPor=models.ForeignKey(solucionadores, on_delete=models.CASCADE,null=True,verbose_name="Solucionado por")
     problemaTema=models.ForeignKey(tematicas, on_delete=models.CASCADE,null=True,verbose_name="Tema del problema")
     problemaFecha=models.DateField(auto_now_add=True,null=True)
+    problemaRev=models.CharField(max_length=10, null=True,verbose_name="Revision")
+    problemaObs=models.CharField(max_length=100, null=True,verbose_name="Observaciones")
     def __str__(self):
         return '%s%s'%(self.problemaNumero,self.problemaProblema)
 
@@ -78,6 +92,7 @@ class UsuarioPaq(models.Model):
     fechaIni=models.DateField(blank=True, null=True)
     fechaPago=models.DateField(blank=True, null=True)
     paqueteMio=models.ForeignKey(paquetes,on_delete=models.CASCADE,null=True)
+    transac=models.CharField(max_length=50, null=True,verbose_name="Transacción")
     activo=models.BooleanField(blank=True, null=True)
     vencido=models.BooleanField(blank=True, null=True,default=False)
     def __str__(self):
@@ -89,25 +104,8 @@ class solucionesConcursos(models.Model):
     usuario=models.IntegerField(null=True)
 
 
-class concursos(models.Model):
-    CreadoPor=models.ForeignKey(User,null=True,on_delete=models.CASCADE)
-    fechaIni=models.DateTimeField(blank=True, null=True)
-    fechaCreado = models.DateField(blank=True, null=True)
-    Tema=models.ForeignKey(tematicas,on_delete=models.CASCADE,null=True)
-    problema=models.FileField(upload_to='concursos',null=True,verbose_name="concurso")
-    activo=models.BooleanField(blank=True, null=True,default=False)
-    Codigo=models.AutoField(primary_key=True)
-    Asignatura=models.ForeignKey(perfil,on_delete=models.CASCADE,null=True)
-    Codigonombre=models.CharField(max_length=50, null=True,verbose_name="Còdigo")
-    preciodeInsc=models.IntegerField(null=True,verbose_name="Precio")
-    participantes=models.IntegerField(null=True,verbose_name="Participantes")
 
 
-    def __str__(self):
-        return '%s%s'%(self.Codigo,self.CreadoPor)
-class UsuarioConcurso(models.Model):
-    usuario=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    concur=models.ForeignKey(concursos,on_delete=models.CASCADE,null=True)
 
 class ProblemaPaq(models.Model):
     problemaID= models.ForeignKey(soluciones,on_delete=models.CASCADE,null=True)
@@ -117,13 +115,17 @@ class QRPago(models.Model):
     qr=models.ImageField(upload_to='qr', null=True)
     Nombre=models.CharField(max_length=50, null=True)
     foto=models.ImageField(upload_to='foto', null=True,blank=True)
-    
-class salas(models.Model):
-    salanombre=models.CharField(max_length=1000)
-    clave=models.CharField(max_length=10,null=True)
-    dueño=models.ForeignKey(User, on_delete=models.CASCADE,null=True)
-class mensajes(models.Model):
-    mensaje=models.CharField(max_length=10000)
-    fecha=models.DateTimeField(default=datetime.datetime.now(), blank=True)
-    usuario=models.CharField(max_length=10000)
-    sala=models.CharField(max_length=10000)
+
+class temaLibro(models.Model):
+    Tema=models.ForeignKey(tematicas,on_delete=models.CASCADE,null=True)
+    libro=models.ForeignKey(libros,on_delete=models.CASCADE,null=True)
+
+
+class PagoEnZona(models.Model):
+
+    producto=models.CharField(max_length=50, null=True)
+    amount=models.IntegerField(null=True,verbose_name="amount")
+    currency=models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    fechaCreado = models.DateField(blank=True, null=True)
+    estado=models.CharField(max_length=50, null=True,verbose_name="estado")
+    id_transaction=models.CharField(max_length=50, null=True,verbose_name="id_transaction")

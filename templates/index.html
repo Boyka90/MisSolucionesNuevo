@@ -1,206 +1,195 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
- <head>
-{% load bootstrap4 %}
-{% bootstrap_css %}
+       <head>
+         {% load bootstrap4 %}
+         {% bootstrap_css %}
          <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Mis Soluciones</title>
-        <link href="{% static 'descarga/ccs.css' %}" rel="stylesheet" type="text/css"  />
-        <link href="{% static 'descarga/fuente.css' %}" rel="stylesheet" type="text/css"  />
-        <link href="{% static 'fonts/sb-bistro/sb-bistro.css' %}" rel="stylesheet" type="text/css"  />
-        <link href="{% static 'fonts/font-awesome/font-awesome.css' %}" rel="stylesheet" type="text/css"  />
-
-        <link href="{% static 'packages/bootstrap/bootstrap.css' %}" rel="stylesheet" type="text/css" media="all"  />
-        <link href="{% static 'packages/o2system-ui/o2system-ui.css' %}" rel="stylesheet" type="text/css" media="all"  />
-        <link href="{% static 'packages/owl-carousel/owl-carousel.css' %}" rel="stylesheet" type="text/css" media="all"  />
-        <link href="{% static 'packages/cloudzoom/cloudzoom.css' %}" rel="stylesheet" type="text/css" media="all"  />
-        <link href="{% static 'packages/thumbelina/thumbelina.css' %}" rel="stylesheet" type="text/css" media="all"  />
-        <link href="{% static 'packages/bootstrap-touchspin/bootstrap-touchspin.css' %}" rel="stylesheet" type="text/css" media="all"  />
-
-     <link href="{% static 'css/theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
-     <link href="{% static 'css/tabla.css' %}" rel="stylesheet" type="text/css" media="all"  />
-        <link href="{% static 'css/alertify.css' %}" rel="stylesheet" type="text/css" media="all"  />
-        <link href="{% static 'css/alertify.min.css' %}" rel="stylesheet" type="text/css" media="all"  />
-<link href="{% static 'css/alertify.rtl.css' %}" rel="stylesheet" type="text/css" media="all"  />
-     <link href="{% static 'css/alertify.rtl.min.css' %}" rel="stylesheet" type="text/css" media="all"  />
-    <link href="{% static 'ccstabla/css/editor/select2.css' %}" rel="stylesheet" type="text/css"  />
-    <link href="{% static 'ccstabla/css/editor/datetimepicker.css' %}" rel="stylesheet" type="text/css"  />
-    <link href="{% static 'ccstabla/css/editor/bootstrap-editable.css' %}" rel="stylesheet" type="text/css"  />
-    <link href="{% static 'ccstabla/css/editor/x-editor-style.css' %}" rel="stylesheet" type="text/css"  />
-    <link href="{% static 'ccstabla/css/data-table/bootstrap-table.css' %}" rel="stylesheet" type="text/css"  />
-    <link href="{% static 'ccstabla/css/data-table/bootstrap-editable.css' %}" rel="stylesheet" type="text/css"  />
-    <link href="{% static 'ccstabla/css/responsive.css' %}" rel="stylesheet" type="text/css"  />
-     <link href="{% static 'datatables-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"  />
-     <link href="{% static 'datatables-responsive/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"  />
-     <link href="{% static 'datatables-buttons/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"  />
-
-        
-
- </head>
-
-  <body onload="verifConcur()">
-    <div class="page-header">
-        <!--=============== Navbar ===============-->
-      <nav  class="navbar fixed-top navbar-expand-md " id="page-navigation">
-        <div class="container" >
-              <!-- Navbar Brand -->
-              <a href="{% url 'index' %}" class="navbar-brand">
-              <img src="{% static 'img/logo/missoluciones11.png' %}" alt="">
-              </a>
-               <!-- Toggle Button -->
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarcollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarcollapse">
-              <!-- Navbar Menu -->
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Comprar
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-                       <a class="dropdown-item" data-toggle="dropdown"  aria-haspopup="true" aria-expanded="false" href="">Categorias Ejercicios</a>
-                         <ul class="dropdown-menu multi-level" aria-labelledby="navbarDropdownMenulink">
-                             {% for u in perfiles %}
-                             <li class="dropdown-submenu" ><a href="{% url 'LPaquetes' u.nombrePerfil %}" class="dropdown-item">{{u.nombrePerfil}}</a></li>
-                             {% endfor %}
-                         </ul>
-
-
-                        <a class="dropdown-item" href="">Libros</a>
-                        <a class="dropdown-item" href="{%url 'concur' %}">Encuentros de conocimientos</a>
-                        <a class="dropdown-item" href="{%url 'home' %}">Solicitud de encuentro virtual</a>
-                    </div>
-                  </li>
-
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        Opciones
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{% url 'consultar' %}">Bibliotecas de soluciones</a>
-
-{% if request.user.id in listaProfe %}
-                        <a class="dropdown-item" href="{% url 'listatemas' %}">Gestión de Temas</a>
-                        <a class="dropdown-item" href="{% url 'formaPket' %}">Gestión de Paquetes</a>
-                        <a class="dropdown-item" href="{% url 'cargar' %}">Subir soluciones</a>
-                        <a class="dropdown-item" href="{%url 'home' %}">Creación de sala de chat</a>
-                        {% endif %}
-                        {% if request.user.is_staff %}
-                        <a class="dropdown-item" href="{% url 'listalibros' %}">Gestión libros o Guías</a>
-                        <a class="dropdown-item" href="{% url 'CreaConcursos' %}">Gestión concursos</a>
-                        {% endif %}
-                    </div>
-                  </li>
-<li class="nav-item">
-                    <a class="nav-link " href="{% url 'promociones' %}" id="navbarDropdown" role="button"  aria-haspopup="true" aria-expanded="false" >Promociones</a>
+         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <meta name="description" content="" />
+         <meta name="author" content="" />
+         <title>Mis Soluciones</title>
+         <link href="{% static 'descarga/ccs.css' %}" type="text/css"  />
+         <link href="{% static 'descarga/fuente.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'fonts/sb-bistro/sb-bistro.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'fonts/font-awesome/font-awesome.css' %}" rel="stylesheet" type="text/css"  />
+         <link rel="icon" href="{% static 'img/logo/icons8-graphql-144.png' %}" type="image/x-icon" />
+         <link href="{% static 'packages/bootstrap/bootstrap.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'packages/o2system-ui/o2system-ui.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'packages/owl-carousel/owl-carousel.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'packages/cloudzoom/cloudzoom.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'packages/thumbelina/thumbelina.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'packages/bootstrap-touchspin/bootstrap-touchspin.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/fixedHeader.dataTables.min.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/tabla.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/alertify.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/alertify.min.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/alertify.rtl.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/stacktable.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'css/alertify.rtl.min.css' %}" rel="stylesheet" type="text/css" media="all"  />
+         <link href="{% static 'ccstabla/css/editor/select2.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'ccstabla/css/editor/datetimepicker.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'ccstabla/css/editor/bootstrap-editable.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'ccstabla/css/editor/x-editor-style.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'ccstabla/css/data-table/bootstrap-table.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'ccstabla/css/data-table/bootstrap-editable.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'ccstabla/css/responsive.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'datatables-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'datatables-responsive/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'datatables-buttons/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'menu/owl.carousel.min.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'menu/style.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'menu/css/style.css' %}" rel="stylesheet" type="text/css"  />
+         <link href="{% static 'menu/css/bootstrap.min.css' %}" type="text/css"  />
+         <link href="https://fonts.googleapis.com/css?family=Quicksand:400,600,700&display=swap" rel="stylesheet">
+       </head>
+    <body>
+         <div class="site-mobile-menu site-navbar-target">
+            <div class="site-mobile-menu-header">
+              <div class="site-mobile-menu-close mt-3">
+                <span class="icon-close2 js-menu-toggle"></span>
+              </div>
+           </div>
+              <div class="site-mobile-menu-body"></div>
+         </div> <!-- .site-mobile-menu -->
 
 
 
-                </li>
+           <div class="site-navbar-wrap">
+               <div class="site-navbar-top">
+                   <div class="container py-3">
+                      <div class="row align-items-center">
+                          <div class="col-6">
+                              <div class="d-flex mr-auto">
+                                 <a href="#" class="d-flex align-items-center mr-4">
+                                       <span class="icon-envelope mr-2"></span>
+                                            <span class="d-none d-md-inline-block">missoluciones22@yandex.com</span>
+                                 </a>
+                                 <a href="#" class="d-flex align-items-center mr-auto">
+                                 <span class="icon-phone mr-2"></span>
+                                            <span class="d-none d-md-inline-block">+53 51593881</span>
+                                 </a>
+                              </div>
+                          </div>
+                          <div class="col-6 text-right">
+                           <div class="mr-auto">
+                             <a href="#" class="p-2 pl-0"><span class="icon-twitter"></span></a>
+                             <a href="#" class="p-2 pl-0"><span class="icon-facebook"></span></a>
+                             <a href="#" class="p-2 pl-0"><span class="icon-linkedin"></span></a>
+                             <a href="#" class="p-2 pl-0"><span class="icon-instagram"></span></a>
+                          </div>
+                       </div>
+                   </div>
+              </div>
+           </div>
+          </div>
+
+          <div class="site-navbar site-navbar-target js-sticky-header">
+              <div class="container">
+                 <div class="row align-items-center">
+                         <div class="col-2">
+                             <h1 class="my-0 site-logo"><a href="{%url 'index' %}">SOLUCIONES</a></h1>
+                         </div>
+                          <div class="col-9">
+                             <nav class="site-navigation text-right" role="navigation">
+                                <div class="container">
+                                   <div class="d-inline-block d-lg-none ml-md-0 mr-auto py-3"><a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a>
+                               </div>
+                               <span class="navbar-toggler-icon"></span>
+                                  <ul class="site-menu main-menu js-clone-nav d-none d-lg-block">
+                                    {% if not request.user.username == "Estudiantes" %}
+                                     <li class="has-children">
+                                         <a href="#" class="nav-link">COMPRAR</a>
+                                         <ul class="dropdown arrow-top">
+                                           <li><a href="{%url 'concur' %}" class="nav-link">CONCURSOS</a></li>
+                                           <li><a href="#" class="nav-link">LIBROS</a></li>
+                                           <li><a href="{%url 'home' %}" class="nav-link">ENCUENTRO VIRTUAL</a></li>
+                                           <li class="has-children">
+                                              <a href="#">EJERCICIOS</a>
+                                              <ul class="dropdown">
+                                              {% for u in perfiles %}
+                                          <li><a href="{% url 'LPaquetes' u.nombrePerfil %}">{{u.nombrePerfil}}</a></li>
+                                              {% endfor %}
+                                           </ul>
+                                          </li>
+                                         </ul>
+                                      </li>
+                                  {% endif %}
+                               <li class="has-children">
+                                 <a href="#" class="nav-link">OPCIONES</a>
+                               <ul class="dropdown arrow-top">
+                                {% if request.user.id in listaProfe %}
+                               <li><a href="{% url 'listatemas' %}" class="nav-link">Gestión de Temas</a></li>
+                               <li><a href="{% url 'formaPket' %}" class="nav-link">Gestión de Paquetes</a></li>
+                               <li><a href="{% url 'listalibros' %}" class="nav-link">Gestión libros o Guías</a></li>
+                               <li><a href="{% url 'cargar' %}" class="nav-link">Subir soluciones</a></li>
+                                <li><a href="{% url 'consultar' %}" class="nav-link">Biblioteca de Soluciones</a></li>
+                               {% else %}
+                                <li><a href="{% url 'consultar' %}" class="nav-link">Biblioteca de Soluciones</a></li>
 
 
-                {% if au %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >Mis Paquetes</a>
-
-                    <div id='mispaquetes' class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-                        {% for u in mispaquetes %}
-                        <a class="dropdown-item" href="{% url 'mipkt' u.paqueteMio %}">{{u.paqueteMio}}</a>
-                        {% endfor %}
-
-                        
-                    </div>
-
-                    {% endif %}
-                    
-
-                </li>
-                {% if not request.user.is_authenticated%}
-                <li class="nav-item">
-                    <a href="{% url 'registro' %}" class="nav-link">Registro</a>
-                </li>
-                {% endif%}
-                {% if not request.user.is_authenticated %}
-                <li class="nav-item">
-                    <a href="{% url 'Milogin' %}" class="nav-link">Login</a>
-                
-                </li>
-                {% endif%}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <div class="avatar-header"><img src="{% static 'img/logo/avatar.jpg' %}"></div> {{ request.user.username }}
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" onclick='historial()' href="" data-toggle="modal" data-target="#myModalyyy">Historial de Compra</a>
-
-                        <a class="dropdown-item" href="{% url 'logout' %}">Salir</a>
-                    </div>
-                  </li>
-                <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-shopping-basket"></i> <span id="cantidadCarro" class="badge badge-primary">0</span>
-                    </a>
-                    <div class="dropdown-menu shopping-cart">
-                        <ul>
-                            <li>
-                                <div class="drop-title">Compras</div>
-                            </li>
-                            <li>
-                                <div class="shopping-cart-list" id="carrito">
-                                    <div class="media">
-
-                                    </div>
+                                {% endif %}
 
 
+                               </ul>
+                               </li>
+                               <li><a href="{% url 'promociones' %}" class="nav-link">PROMOCIONES</a></li>
+                               {% if au %}
+                               <li class="has-children"><a href="#">MIS PAQUETES</a>
+                                  <ul class="dropdown arrow-top">
+                                  {% for u in mispaquetes %}
+                                  <li><a href="{% url 'mipkt' u.paqueteMio %}">{{u.paqueteMio}}</a></li>
+                                   {% endfor %}
+                                 </ul>
+                               </li>
+                                  {% endif %}
+                                  {% if not request.user.is_authenticated%}
+                               <li class="nav-item">
+                                <a href="{% url 'registro' %}" class="nav-link">REGISTRO</a>
+                               </li>
+                                {% endif%}
+                                {% if not request.user.is_authenticated %}
+                               <li class="nav-item">
+                                <a href="{% url 'Milogin' %}" class="nav-link">LOGIN</a>
+                               </li>
+                               {% endif%}
+                               {% if request.user.is_authenticated %}
+                               <li class="has-children">
+                                   <a href="{% url 'Milogin' %}" class="nav-link text-uppercase">{{ request.user.username }}</a>
+                                   <ul class="dropdown arrow-top">
+                               <li><a href="#" class="nav-link">Historial de Compras</a></li>
+                               <li><a href="{% url 'logout' %}" class="nav-link">Salir</a></li>
+                                    </ul>
+                                </li>
+                               {% endif%}
+                             </ul>
+                        </div>
+                        </nav>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
 
-
-
-
-                                </div>
-                            </li>
-                            <li>
-                                <div id="totalcarrito" class="drop-title d-flex justify-content-between">
-                                    <span>Total:</span>
-                                    <span id="total" class="text-primary"><strong>0.00</strong></span>
-                                </div>
-                            </li>
-                            <li class="d-flex justify-content-between pl-3 pr-3 pt-3">
-
-                                <button onclick="Pagar()" class="btn btn-primary">Habilitar</button>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            </ul>
-        </div>
-      </div>
-     </nav>
-    </div>
-
-    <div id="page-content" class="page-content">
-
-        <div class="banner">
-          <div class="jumbotron jumbotron-video text-center bg-dark mb-0 rounded-0">
+       <div id="page-content" class="page-content">
+         <div class="banner">
+              <div class="jumbotron jumbotron-video text-center bg-dark mb-0 rounded-0">
               {% if var%}
               <video width="100%" preload="auto" loop autoplay muted>
                   <source src="{% static 'media/explore.mp4' %}" type='video/mp4' />
                   <source src="{% static 'media/explore.webm' %}" type='video/webm' />
               </video>
               <div class="container">
+
                   <h1 class="pt-5">
                       LA PRIMERA REGLA DEL ÉXITO<br>
                       ES UNA BUENA PREPARACIÓN.
                   </h1>
                   <p class="lead">
-                      24 hrs a tu servicio.
+
+                 <br />
+                      <a href="{% url 'consultar' %}">{{total}} soluciones de distintas disciplinas. {{problXLibro}}.
+                      disponibles 24 horas.</a>
                   </p>
 
                   <div class="row">
@@ -231,7 +220,7 @@
                               </div>
                               <div class="card-body">
                                   <h4 class="card-title">
-                                      Libros 
+                                      Libros
                                   </h4>
                                   <p class="card-text">
                                       Contamos con una Biblioteca extendida sobre las materias de Física, Matemática y Circuitos Eléctricos.
@@ -262,9 +251,13 @@
               {% endif %}
           </div>
 
-      </div>
+        </div>
 
         {% block contenido %}
+         </br>
+       </br>
+        </br>
+       </br>
         {% endblock %}
 
       <section id="why">
@@ -359,7 +352,7 @@
               <div class="item">
                   <div class="card rounded-0 border-0 text-center">
                       <img src="{% static 'img/libros-auto.jpg' %}">
-                                           
+
                       <div class="card-img-overlay d-flex align-items-center justify-content-center">
                           <!-- <h4 class="card-title">Vegetables</h4> -->
                           <a href="shop.html" class="btn btn-primary btn-lg">LIBROS</a>
@@ -371,7 +364,7 @@
                       <img src="{% static 'img/fisica-auto.jpg' %}">
                       <div class="card-img-overlay d-flex align-items-center justify-content-center">
                           <!-- <h4 class="card-title">Fruits</h4> -->
-                          <a href="{% url 'LPaquetes' perfiles.0.nombrePerfil %}" class="btn btn-primary btn-lg">PROBLEMAS FÍSICA</a>
+                          <a href="{% url 'LPaquetes' perfiles.1.nombrePerfil %}" class="btn btn-primary btn-lg">PROBLEMAS FÍSICA</a>
                       </div>
                   </div>
               </div>
@@ -380,7 +373,7 @@
                       <img src="{% static 'img/matematica-auto.jpg' %}">
                       <div class="card-img-overlay d-flex align-items-center justify-content-center">
                           <!-- <h4 class="card-title">Meats</h4> -->
-                          <a href="{% url 'LPaquetes' perfiles.2.nombrePerfil %}" class="btn btn-primary btn-lg">PROBLEMAS MATEMÁTICA</a>
+                          <a href="{% url 'LPaquetes' perfiles.0.nombrePerfil %}" class="btn btn-primary btn-lg">PROBLEMAS MATEMÁTICA</a>
                       </div>
                   </div>
               </div>
@@ -389,7 +382,7 @@
                       <img src="{% static 'img/circuitos-auto.jpg' %}">
                       <div class="card-img-overlay d-flex align-items-center justify-content-center">
                           <!-- <h4 class="card-title">Fishes</h4> -->
-                          <a href="{% url 'LPaquetes' perfiles.1.nombrePerfil %}" class="btn btn-primary btn-lg">CIRCUITOS ELÉCTICOS</a>
+                          <a href="{% url 'LPaquetes' perfiles.2.nombrePerfil %}" class="btn btn-primary btn-lg">CIRCUITOS ELÉCTRICOS</a>
                       </div>
                   </div>
               </div>
@@ -399,6 +392,279 @@
       </section>
   </div>
   <footer>
+
+<div id='whatsapp-chat' class='hide'>
+	<div class='header-chat'>
+	<div class='head-home'><h4>Mis Soluciones</h4>
+		<div class='info-avatar'><img src='https://sistemadecotizaciones.files.wordpress.com/2020/08/supportmale.png'/></div>
+
+	</div>
+
+	<div class='get-new'>
+		<div id='get-label'>Soporte</div>
+		<div id='get-nama'>Servicio al cliente</div>
+
+	</div>
+</div>
+
+<div class='start-chat'>
+<div class='first-msg'><span>¡Hola! ¿Qué puedo hacer por ti?</span></div>
+<div class='blanter-msg'><textarea id='chat-input' placeholder='Escribe un mensaje' maxlength='120' row='1'></textarea>
+<a href='#' onclick="enviar_mensaje();" id='send-it'>Enviar</a></div></div>
+<div id='get-number'>5353452186</div><a class='close-chat' onclick="cerrar_chat();" href='#'>×</a>
+</div>
+
+
+<a class='blantershow-chat' onclick="mostrar_chat();" href='#' title='Show Chat'><svg width="20" viewBox="0 0 24 24"><defs/><path fill="#eceff1" d="M20.5 3.4A12.1 12.1 0 0012 0 12 12 0 001.7 17.8L0 24l6.3-1.7c2.8 1.5 5 1.4 5.8 1.5a12 12 0 008.4-20.3z"/><path fill="#4caf50" d="M12 21.8c-3.1 0-5.2-1.6-5.4-1.6l-3.7 1 1-3.7-.3-.4A9.9 9.9 0 012.1 12a10 10 0 0117-7 9.9 9.9 0 01-7 16.9z"/><path fill="#fafafa" d="M17.5 14.3c-.3 0-1.8-.8-2-.9-.7-.2-.5 0-1.7 1.3-.1.2-.3.2-.6.1s-1.3-.5-2.4-1.5a9 9 0 01-1.7-2c-.3-.6.4-.6 1-1.7l-.1-.5-1-2.2c-.2-.6-.4-.5-.6-.5-.6 0-1 0-1.4.3-1.6 1.8-1.2 3.6.2 5.6 2.7 3.5 4.2 4.2 6.8 5 .7.3 1.4.3 1.9.2.6 0 1.7-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.3-.6-.4z"/></svg>
+En que te puedo Ayudar?</a>
+
+<style>
+body {
+    font-family: "Lato", sans-serif;
+    background: #f1f1f1;
+}
+a:link,
+a:visited {
+    color: #444;
+    text-decoration: none;
+    transition: all 0.4s ease-in-out;
+}
+
+
+
+/* CSS Whatsapp Chat */
+#whatsapp-chat {
+    position: fixed;
+    background: #fff;
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 1px 15px rgba(32, 33, 36, 0.28);
+    bottom: 90px;
+    right: 30px;
+    overflow: hidden;
+    z-index: 99;
+    animation-name: showchat;
+    animation-duration: 1s;
+    transform: scale(1);
+}
+
+a.blantershow-chat {
+    /*   background: #009688; */
+    background: #fff;
+    color: #404040;
+    position: fixed;
+    display: flex;
+    font-weight: 400;
+    justify-content: space-between;
+    z-index: 98;
+    bottom: 25px;
+    right: 30px;
+    font-size: 15px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 1px 15px rgba(32, 33, 36, 0.28);
+}
+
+a.blantershow-chat svg {
+    transform: scale(1.2);
+    margin: 0 10px 0 0;
+}
+
+.header-chat {
+    background: #095e54;
+    color: #fff;
+    padding: 20px;
+}
+.header-chat h3 {
+    margin: 0 0 10px;
+}
+.header-chat p {
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+}
+.info-avatar {
+    position: relative;
+}
+.info-avatar img {
+    border-radius: 100%;
+    width: 50px;
+    float: left;
+    margin: 0 10px 0 0;
+}
+.info-avatar:before {
+    content: "\f232";
+    z-index: 1;
+    font-family: "Font Awesome 5 Brands";
+    background: #23ab23;
+    color: #fff;
+    padding: 4px 5px;
+    border-radius: 100%;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+.info-chat span {
+    display: block;
+}
+#get-label,
+span.chat-label {
+    font-size: 12px;
+    color: #888;
+}
+#get-nama,
+span.chat-nama {
+    margin: 5px 0 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+}
+#get-label,
+#get-nama {
+    color: #fff;
+}
+span.my-number {
+    display: none;
+}
+.blanter-msg {
+    color: #444;
+    padding: 20px;
+    font-size: 12.5px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+textarea#chat-input {
+    border: none;
+    font-family: "Arial", sans-serif;
+    width: 100%;
+    height: 20px;
+    outline: none;
+    resize: none;
+}
+a#send-it {
+    color: #555;
+    width: 40px;
+    margin: -5px 0 0 5px;
+    font-weight: 700;
+    padding: 8px;
+    background: #eee;
+    border-radius: 10px;
+}
+.first-msg {
+    background: #f5f5f5;
+    padding: 30px;
+    text-align: center;
+}
+.first-msg span {
+    background: #e2e2e2;
+    color: #333;
+    font-size: 14.2px;
+    line-height: 1.7;
+    border-radius: 10px;
+    padding: 15px 20px;
+    display: inline-block;
+}
+.start-chat .blanter-msg {
+    display: flex;
+}
+#get-number {
+    display: none;
+}
+a.close-chat {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    color: #fff;
+    font-size: 30px;
+}
+.keyframes showhide {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+}
+.keyframes showchat {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+.media screen and (max-width: 480px) {
+    #whatsapp-chat {
+        width: auto;
+        left: 5%;
+        right: 5%;
+        font-size: 80%;
+    }
+}
+.hide {
+    display: none;
+    animation-name: showhide;
+    animation-duration: 1.5s;
+    transform: scale(1);
+    opacity: 1;
+}
+.show {
+    display: block;
+    animation-name: showhide;
+    animation-duration: 1.5s;
+    transform: scale(1);
+    opacity: 1;
+}
+
+
+</style>
+
+<script>
+
+function enviar_mensaje(){
+	var a = document.getElementById("chat-input");
+    if ("" != a.value) {
+        var b = document.getElementById("get-number").innerHTML,c = document.getElementById("chat-input").value, d = "https://web.whatsapp.com/send", e = b,  f = "&text=" + c;
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) var d = "whatsapp://send";  var g = d + "?phone=" + e + f;  window.open(g, "_blank");
+    }
+}
+
+const whatsapp_chat =document.getElementById("whatsapp-chat");
+
+   function cerrar_chat(){
+		whatsapp_chat.classList.add("hide");
+		whatsapp_chat.classList.remove("show");
+
+   }
+
+   function mostrar_chat(){
+	    whatsapp_chat.classList.add("show");
+		whatsapp_chat.classList.remove("hide");
+   }
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <div class="container">
         <div class="row">
             <div class="col-md-3">
@@ -428,7 +694,7 @@
                  <h5>Contacto</h5>
                  <ul>
                      <li>
-                        <a href="tel:+620892738334"><i class="fa fa-phone"></i>+53 53579335</a>
+                        <a href="tel:+620892738334"><i class="fa fa-phone"></i>+53 53452186</a>
                     </li>
                     <li>
                         <a href="mailto:hello@domain.com"><i class="fa fa-envelope"></i>misoluciones22@yandex.com</a>
@@ -466,6 +732,7 @@
 <script>
     function Pagar() {
     var todo=document.getElementsByClassName("media");
+    var fuenteDePago="Carrito"
     var ids=[]
     for (i = 0; i < todo.length; i++){
     ids[i]=todo[i].id
@@ -481,7 +748,7 @@
         data: {
 
           'lista': ids,
-
+          'fuenteDePago': fuenteDePago
 
         },
         dataType: 'json',
@@ -541,9 +808,46 @@
 
 
     </script>
+    <script type="text/javascript" src="{% static 'js/jquery-3.5.1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'menu/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'menu/popper.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.4/jquery.sticky.js"></script>
 
-    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
-     <script type="text/javascript" src="{% static 'js/popper.js' %}"></script>
+     <script type="text/javascript" src="{% static 'menu/main.js' %}"></script>
+
+
+
+    <script type="text/javascript" src="{% static 'js/fixedHeader.dataTables.min.js' %}"></script>
+
+     <script type="text/javascript" src="{% static 'js/stacktable.js' %}"></script>
+     <script type="text/javascript" src="{% static 'datatables/jquery.dataTables.min.js' %}"></script>
+     <script type="text/javascript" src="{% static 'datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+     <script type="text/javascript" src="{% static 'datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+     <script type="text/javascript" src="{% static 'datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+     <script type="text/javascript" src="{% static 'datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+     <script type="text/javascript" src="{% static 'datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $('#example2').DataTable({
+      "paging": true,
+      "pageLength": 7,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+</script>
+
+
+
+
     <script type="text/javascript" src="{% static 'js/jquery-migrate.js' %}"></script>
     <script type="text/javascript" src="{% static 'packages/bootstrap/libraries/popper.js' %}"></script>
     <script type="text/javascript" src="{% static 'packages/bootstrap/bootstrap.js' %}"></script>
@@ -556,50 +860,16 @@
     <script type="text/javascript" src="{% static 'js/alertify.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/alertify.min.js' %}"></script>
 
-
-  <script src="{% static 'ccstabla/js/metisMenu/metisMenu.min.js' %}"></script>
- <script src="{% static 'ccstabla/js/metisMenu/metisMenu-active.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/bootstrap-table.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/tableExport.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/data-table-active.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/bootstrap-table-editable.js' %}"></script>
- <script src="{% static 'ccstabla/js/bootstrap.min.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/bootstrap-editable.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/bootstrap-table-resizable.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/colResizable-1.5.source.js' %}"></script>
- <script src="{% static 'ccstabla/js/data-table/bootstrap-table-export.js' %}"></script>
- <script src="{% static 'ccstabla/js/editable/jquery.mockjax.js' %}"></script>
- <script src="{% static 'ccstabla/js/editable/mock-active.js' %}"></script>
- <script src="{% static 'ccstabla/js/editable/select2.js' %}"></script>
- <script src="{% static 'ccstabla/js/editable/moment.min.js' %}"></script>
- <script src="{% static 'ccstabla/js/editable/bootstrap-datetimepicker.js' %}"></script>
- <script src="{% static 'ccstabla/js/editable/bootstrap-editable.js' %}"></script>
- <script src="{% static 'ccstabla/js/editable/xediable-active.js' %}"></script>
-    <script src="{% static 'datatables/jquery.dataTables.min.js' %}"></script>
-  <script src="{% static 'datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
-  <script src="{% static 'datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-  <script src="{% static 'datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'datatables-buttons/js/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'datatables-buttons/js/buttons.print.min.js' %}"></script>
-     <script src="{% static 'datatables-buttons/js/buttons.colVis.min.js' %}"></script>
-  <script>
-  $(function () {
-    $("#example1").DataTable({
-      "responsive": true,
-      "autoWidth": false,
-    });
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
-</script>
-
+    <script src="{% static 'ccstabla/js/metisMenu/metisMenu.min.js' %}"></script>
+    <script src="{% static 'ccstabla/js/metisMenu/metisMenu-active.js' %}"></script>
+    <script src="{% static 'ccstabla/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ccstabla/js/editable/jquery.mockjax.js' %}"></script>
+    <script src="{% static 'ccstabla/js/editable/mock-active.js' %}"></script>
+    <script src="{% static 'ccstabla/js/editable/select2.js' %}"></script>
+    <script src="{% static 'ccstabla/js/editable/moment.min.js' %}"></script>
+    <script src="{% static 'ccstabla/js/editable/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'ccstabla/js/editable/bootstrap-editable.js' %}"></script>
+    <script src="{% static 'ccstabla/js/editable/xediable-active.js' %}"></script>
   </body>
   </html>
 
