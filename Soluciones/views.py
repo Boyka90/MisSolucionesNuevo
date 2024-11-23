@@ -241,7 +241,21 @@ def enviacorreo(Asunto,comentario,correo,origen):
 def enviacorreoValidar(request):
         print("enviando...")
 
+def Modalvirtual(request):
+        asignatura= request.GET.get('asignatura', None)
+        data={'msj':"asignatura"}
+        return JsonResponse(data)
 
+def Buscatemasxperfil(request):
+    libro=request.GET.get('perfil', None)
+    temas=tematicas.objects.select_related("perfilId").filter(perfilId__nombrePerfil=libro)
+    lista=[]
+    for u in temas:
+        lista.append(u.temaNombre)
+
+
+    data= {'temas':list(lista)}
+    return JsonResponse(data)
 
 
 
@@ -441,7 +455,7 @@ def versolucion(request,libro, numero):
 
     dic=completarPlantilla(request)
     id=libros.objects.get(titulo=libro)
-    solucion=soluciones.objects.get(problemaLibro=id, problemaNumero=numero)
+    solucion=soluciones.objects.select_related().get(problemaLibro=id, problemaNumero=numero)
     mispaquetes=UsuarioPaq.objects.select_related('paqueteMio').filter(usuario=request.user.id)
     dic["solucion"]=solucion
     dic["pkt"] = request.session["pkt"]
@@ -453,7 +467,7 @@ def versolucionProfe(request,libro, numero):
 
     dic=completarPlantilla(request)
     id=libros.objects.get(titulo=libro)
-    solucion=soluciones.objects.get(problemaLibro=id, problemaNumero=numero)
+    solucion=soluciones.objects.select_related().get(problemaLibro=id, problemaNumero=numero)
 
 
 
@@ -492,7 +506,7 @@ def compraPKT(request): #OK
        puede = UsuarioPaq.objects.filter(usuario=usuarioID, paqueteMio=paquetes.objects.get(paqueteCod=UnPKT),activo=True)
        if len(puede)==0:
             UsuarioPaq.objects.create(usuario=usuarioID, fechaIni=fecha1,paqueteMio=paquetes.objects.get(paqueteCod=UnPKT), activo=False, transac=transacion)
-            data={'sms':"2transacion"}
+            data={'sms':"Ha Adquirido un paquete mediante la Transacción {0}".format(transacion)}
 
 
 

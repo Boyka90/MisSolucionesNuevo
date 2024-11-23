@@ -27,7 +27,28 @@ SECRET_KEY = '6f6g%62c^-d8r^dljr#4d7xg&d4(8nmg)9fh=w9an133^*-u60'
 DEBUG = True
 
 ALLOWED_HOSTS = ['missoluciones2022.pythonanywhere.com']
+CORS_ALLOWED_ORIGINS = [
+    "http://mozilla.github.io/pdf.js/build/pdf.mjs",
+    "https://api.domain.com",
+    "http://localhost:8080",
+    "http://127.0.0.1:9000"
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+r"^https://\w+\.domain\.com$",
+]
+CORS_ALLOW_HEADERS = [
+'accept',
+'accept-encoding',
+'authorization',
+'content-type',
+'dnt',
+'origin',
+'user-agent',
+'x-csrftoken',
+'x-requested-with',
+]
 
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -42,6 +63,7 @@ INSTALLED_APPS = [
     'Soluciones',
     'rest_framework',
     'django_crontab',
+    'corsheaders',
 
 
 
@@ -49,6 +71,7 @@ INSTALLED_APPS = [
 CRONJOBS = [('5 23 * * *', 'Soluciones.evento.actvivar_pqt')]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'MisSoluciones.urls'

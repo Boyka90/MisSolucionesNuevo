@@ -1,11 +1,10 @@
 
-from Soluciones.models import paquetes, UsuarioPaq
-import datetime
+from MySQLdb import _mysql
+
+db=_mysql.connect(host="missoluciones2022.mysql.pythonanywhere-services.com",user="missoluciones202",password="Tamara2023",database="missoluciones202$misSoluciones2023")
 
 def actvivar_pqt():
-    usu=UsuarioPaq.objects.all()
-    for u in usu:
-        pt=paquetes.objects.get(paqueteCod=str(u.paqueteMio))
-        tiempo=u.fechaIni+datetime.timedelta(days=pt.paqueteDias)
-        if tiempo>datetime.date.today() :
-            usu=UsuarioPaq.objects.filter(paqueteMio_id=pt.paqueteID).update(activo=False)
+    db.query("UPDATE Soluciones_usuariopaq INNER JOIN Soluciones_paquetes ON Soluciones_usuariopaq.paqueteMio_id = Soluciones_paquetes.paqueteId SET Soluciones_usuariopaq.vencido = CASE WHEN DATE_ADD(Soluciones_usuariopaq.fechaIni, INTERVAL Soluciones_paquetes.paqueteDias DAY) < CURDATE() THEN 1 ELSE Soluciones_usuariopaq.vencido END")
+
+
+actvivar_pqt()

@@ -21,44 +21,28 @@
         <link href="{% static 'css/theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
 
 </head>
-<body>
-	<div class="page-header">
-		 <!--=============== Navbar ===============-->
-		<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-transparent" id="page-navigation">
-			<div class="container">
-             <!-- Navbar Brand -->
-             <a href="index.html" class="navbar-brand">
-	        <img src="{% static 'img/logo/logo.png' %}" alt="">
+<div class="container" style="width:100%;height:auto">
+<div class="jumbotron jumbotron-bg text-center rounded-0" style="background-image: url('{% static "img/logo/3862130.jpg" %}');">
 
-            </a>
-             <!-- Toggle Button -->
-			 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarcollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-            </div> 
-		</nav>
-	</div>
-	<div id="page-content" class="page-content">
-        <div class="banner">
-            <div class="jumbotron jumbotron-bg text-center rounded-0" style="background-image: url('{% static "img/logo/3862130.jpg" %}');">
-							
-                <div class="container">
-                    <h1 class="pt-5">
-                        Iniciar Sesión
-                    </h1>
-                    <p class="lead">
-                       Un excelente colectivo puede ayudarlo a encontrar la solución
-                    </p>
-             {% if messages %}
+
+
+
+
+{% if messages %}
 <ul class="messages">
     {% for message in messages %}
     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     {% endfor %}
 </ul>
 {% endif %}
-
-
                     <div class="card card-login mb-5">
+
+                    <h1 class="pt-5">
+                        Iniciar Sesión
+                    </h1>
+                    <p class="lead">
+                       Un excelente colectivo puede ayudarlo a encontrar la solución
+                    </p>
                         <div class="card-body">
                              <div style="color:#800080" id="demo"></div>
                             <ul class="messages">
@@ -73,22 +57,22 @@
                                         <input class="form-control" type="password" required="" placeholder="Contraseña" name="password">
                                     </div>
                                 </div>
-                               
+
                                 <div class="form-group row text-center mt-4">
                                     <div class="col-md-12">
                                         <button type="submit" class="btn btn-primary btn-block text-uppercase">Acceder</button>
                                     </div>
                                 </div>
-								
+
                             </form>
 							<div class="form-group row text-center mt-4">
 								<div class="col-md-12">
 									<a  href="{% url 'registro' %}" class="btn btn-primary btn-block text-uppercase">Registrarse</a>
-									
+
 								</div>
 							</div>
 
-							
+
 
                         </div>
                     </div>
@@ -96,73 +80,14 @@
             </div>
         </div>
     </div>
-	<footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <h5>Como encontrarnos</h5>
-                    <p></p>
-                </div>
-                <div class="col-md-3">
-                    <h5>Enlaces</h5>
-                    <ul>
-                        <li>
-                            <a href="about.html">About</a>
-                        </li>
-                        <li>
-                            <a href="contact.html">Contactanos</a>
-                        </li>
-                        
-                        <li>
-                            <a href="javascript:void(0)">Como trabajamos</a>
-                        </li>
-                        <li>
-                            <a href="terms.html">Terminos</a>
-                        </li>
-                        
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                     <h5>Contact</h5>
-                     <ul>
-                         <li>
-                            <a href="tel:+620892738334"><i class="fa fa-phone"></i> 08272367238</a>
-                        </li>
-                        <li>
-                            <a href="mailto:hello@domain.com"><i class="fa fa-envelope"></i>soluciones23@gmail.com</a>
-                         </li>
-                     </ul>
+    </div>
+</div>
+</div>
 
-                     <h5>Seguirnos</h5>
-                     <ul class="social">
-                         <li>
-                            <a href="javascript:void(0)" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                         </li>
-                         <li>
-                            <a href="javascript:void(0)" target="_blank"><i class="fab fa-instagram"></i></a>
-                         </li>
-                         <li>
-                            <a href="javascript:void(0)" target="_blank"><i class="fab fa-youtube"></i></a>
-                         </li>
-                     </ul>
-                </div>
-                <div class="col-md-3">
-                     <h5>Descarga nuestra APP</h5>
-                     <ul class="mb-0">
-                         <li class="download-app">
-                             <a href="#"><img src="{% static 'img/playstore.png' %}"></a>
-							</li>
-                         <li style="height: 200px">
-                             <div class="mockup">
-                                 <img src="{% static 'img/mockup.png' %}">
-							 </div>
-                         </li>
-                     </ul>
-                </div>
-            </div>
-        </div>
-        <p class="copyright">&copy; 2022 MisSoluciones | Estudio Online. Derechos Reservados.</p>
-    </footer>
+
+
+
+
 <script>
 	function letras(texto){
   var letras1=sonLetrasSolamente(texto)

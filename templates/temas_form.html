@@ -7,7 +7,7 @@
  </div>
     </div>
 <div class="mx-auto border" style="width: 900px;" >
-<form  method="post">{% csrf_token %}
+<form  method="post" enctype="multipart/form-data">{% csrf_token %}
 
 {{form.as_table}}
 

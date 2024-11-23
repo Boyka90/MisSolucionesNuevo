@@ -14,6 +14,7 @@ class tematicas(models.Model):
 
     temaNombre=models.CharField(max_length=50, null=True,verbose_name='Nombre del Tema')
     perfilId=models.ForeignKey(perfil,on_delete=models.CASCADE,null=True,verbose_name='Perfil')
+    resumenTema=models.FileField(upload_to='soluciones',null=True,verbose_name="Resumen de tema")
     agregadoPor = models.ForeignKey(User,on_delete=models.CASCADE,null=True,verbose_name='Agregado por:')
     def __str__(self):
         return '%s'%(self.temaNombre)
@@ -75,6 +76,7 @@ class paquetes(models.Model):
 class soluciones(models.Model):
     problemaNumero=models.CharField(max_length=50, null=True,verbose_name="Numero del Problema")
     problemaProblema=models.ImageField(upload_to='problemas', null=True,verbose_name="Figura del problema")
+
     problemaID=models.AutoField(primary_key=True)
     problemaLibro=models.ForeignKey(libros, on_delete=models.CASCADE,null=True,verbose_name="Libro o Guia")
     problemaSolucion=models.FileField(upload_to='soluciones',null=True,verbose_name="Documento de solución")

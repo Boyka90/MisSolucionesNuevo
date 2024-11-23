@@ -65,6 +65,7 @@ urlpatterns = [
     path('ajax/borrarPaquetes/', borrarPaquetes, name='borrarPaquetes'),
     path('ajax/getPaquetes/', getPaquetes, name='getPaquetes'),
     path('ajax/BuscaTemasxLibros/', BuscaTemasxLibros, name='BuscaTemasxLibros'),
+    path('ajax/Buscatemasxperfil/', Buscatemasxperfil, name='Buscatemasxperfil'),
     path('ajax/BuscaProblemas/', BuscaProblemas, name='BuscaProblemas'),
     path('ajax/Muestraproblemas/', Muestraproblemas, name='Muestraproblemas'),
     path('ajax/getDetalles/', getDetalles, name='getDetalles'),
@@ -81,6 +82,7 @@ urlpatterns = [
     path('checkview', checkview, name='checkview'),
     path('getMessages/<str:room>/', getMessages, name='getMessages'),
     path('send', send, name='send'),
+    path('ajax/Modalvirtual/', Modalvirtual, name='Modalvirtual'),
     ]
 
 if settings.DEBUG:
